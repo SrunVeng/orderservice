@@ -6,7 +6,8 @@ public enum ErrorCode {
 
 
 
-    INVALID_CREDENTIAL("ERROR001","INVALID CREDENTAIL 401");
+    INVALID_CREDENTIAL("ERROR001","INVALID CREDENTAIL 401"),
+    ORDER_NOT_FOUND("ORDER001", "ORDER NOT FOUND");
 
     private final String code;
     private final String message;

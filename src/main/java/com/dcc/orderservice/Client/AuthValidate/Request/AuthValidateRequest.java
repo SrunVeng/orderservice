@@ -1,15 +1,13 @@
 package com.dcc.orderservice.Client.AuthValidate.Request;
 
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AuthValidateRequest {
 
-    private String bearerToken;
-
-
+    private String token;
 }

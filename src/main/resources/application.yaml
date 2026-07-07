@@ -1,9 +1,28 @@
+server:
+  port: ${PORT:8080}
+
 spring:
   application:
     name: orderservice
 
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,http://localhost:80,http://localhost}
+
 my-sdk:
   http:
+    recovery:
+      enabled: true
+      client-name: recovery
+      path: /recovery/requests
+      max-immediate-retries: 1
+      max-attempts: 3
     clients:
       auth:
-        base-url: ${AUTH_SERVICE_BASE_URL:http://localhost:9000}
+        base-url: ${AUTH_SERVICE_URL:http://localhost:9000}
+      recovery:
+        base-url: ${RECOVERY_SERVICE_URL:http://localhost:9100}
+
+
+mask:
+  keys: password, pinToken, pin, Token, Key

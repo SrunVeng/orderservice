@@ -10,6 +10,7 @@ import com.dcc.sdkcentral.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -25,24 +26,31 @@ public class AuthValidateRestClient {
 
 
     public boolean authValidate(AuthValidateRequest request) {
-        if (request == null || request.getBearerToken() == null || request.getBearerToken().isBlank()) {
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIAL.getCode(), ErrorCode.INVALID_CREDENTIAL.getMessage());
+        if (request == null || request.getToken() == null || request.getToken().isBlank()) {
+            throw invalidCredential();
         }
 
         RestClientExecutor restClientExecutor = restClientExecutorFactory.getExecutor(AUTH_CLIENT_NAME);
-        AuthValidateResponse response = restClientExecutor.execute(
-                HttpMethod.POST,
-                "/auth/validate",
-                request,
-                AuthValidateResponse.class
-        );
+        AuthValidateResponse response;
+        try {
+            response = restClientExecutor.executeWithRecovery(
+                    HttpMethod.POST, "/auth/validate", request, AuthValidateResponse.class);
+        } catch (RuntimeException ex) {
+            throw invalidCredential();
+        }
         AuthValidateResponse.AuthValidateResponseData data = Objects.requireNonNull(response, "auth validation response")
                 .getData();
         if (data == null || !data.isValid()) {
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIAL.getCode(), ErrorCode.INVALID_CREDENTIAL.getMessage());
+            throw invalidCredential();
         }
         return true;
     }
 
+    private BusinessException invalidCredential() {
+        return new BusinessException(
+                ErrorCode.INVALID_CREDENTIAL.getCode(),
+                ErrorCode.INVALID_CREDENTIAL.getMessage(),
+                HttpStatus.UNAUTHORIZED);
+    }
 
 }
